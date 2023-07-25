@@ -1,4 +1,4 @@
-### 0x11. C - printf
+# 0x11. C - printf
 ## printf project by Japhet & Bruce
 ## 0. I'm not going anywhere. You can print that wherever you want to. I'm here and I'm a Spur for life
 * Prototype: int _printf(const char *format, ...);
@@ -15,7 +15,7 @@
 * You don’t have to handle the length modifiers
 
 ## 1. Education is when you read the fine print. Experience is what you get if you don't
-# Handle the following conversion specifiers:
+### Handle the following conversion specifiers:
 
 * d
 * i
