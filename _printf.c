@@ -1,61 +1,63 @@
-#include "main.h"
-
-void print_buffer(char buffer[], int *buff_ind);
-
-/**
-* _printf - Printf function
-* @format: format.
-* Return: Printed chars.
-*/
-int _printf(const char *format, ...)
-{
-int i, printed = 0, printed_chars = 0;
-int flags, width, precision, size, buff_ind = 0;
-va_list list;
-char buffer[BUFF_SIZE];
-if (format == NULL)
-return (-1);
-va_start(list, format);
-for (i = 0; format && format[i] != '\0'; i++)
-{
-if (format[i] != '%')
-{
-buffer[buff_ind++] = format[i];
-if (buff_ind == BUFF_SIZE)
-print_buffer(buffer, &buff_ind);
-/* write(1, &format[i], 1);*/
-printed_chars++;
-}
-else
-{
-print_buffer(buffer, &buff_ind);
-flags = get_flags(format, &i);
-width = get_width(format, &i, list);
-precision = get_precision(format, &i, list);
-size = get_size(format, &i);
-++i;
-printed = handle_print(format, &i, list, buffer,
-flags, width, precision, size);
-if (printed == -1)
-return (-1);
-printed_chars += printed;
-}
-}
-
-print_buffer(buffer, &buff_ind);
-va_end(list);
-return (printed_chars);
-}
+#include <stdio.h>
+#include <stdarg.h>
 
 /**
-* print_buffer - Prints the contents of the buffer if it exist
-* @buffer: Array of chars
-* @buff_ind: Index at which to add next char, represents the length.
-*/
-void print_buffer(char buffer[], int *buff_ind)
-{
-if (*buff_ind > 0)
-write(1, &buffer[0], *buff_ind);
-*buff_ind = 0;
+ * _printf - Custom printf function with support for %c, %s, and %%
+ * @format: The format string containing conversion specifiers
+ *
+ * Return: The number of characters printed (excluding the null byte used to end output to strings)
+ */
+int _printf(const char *format, ...);
+
+int main() {
+    _printf("Hello %s! This is a character: %c and this is percent sign: %%\n", "John", 'A');
+    return 0;
+}
+
+int _printf(const char *format, ...) {
+    va_list args;
+    va_start(args, format);
+
+    int printed_chars = 0;
+    char c;
+    const char *str;
+
+    while (*format != '\0') {
+        if (*format == '%') {
+            format++; // Move to the next character after '%'
+
+            // Check the conversion specifier
+            switch (*format) {
+                case 'c':
+                    c = (char)va_arg(args, int);
+                    putchar(c);
+                    printed_chars++;
+                    break;
+                case 's':
+                    str = va_arg(args, const char*);
+                    while (*str) {
+                        putchar(*str);
+                        str++;
+                        printed_chars++;
+                    }
+                    break;
+                case '%':
+                    putchar('%');
+                    printed_chars++;
+                    break;
+                default:
+                    // Unsupported conversion specifier, skip it
+                    break;
+            }
+        } else {
+            putchar(*format);
+            printed_chars++;
+        }
+
+        format++; // Move to the next character in the format string
+    }
+
+    va_end(args);
+    return printed_chars;
 }
 
